@@ -8,9 +8,10 @@ class Node:
     Each node has its initial cost and edges with their weightings pointing to other nodes.
     """
     
-    def __init__(self, initial_cost: int, edges: Dict[Node, int], is_source: bool = False, is_target: bool = False) -> None:
+    def __init__(self, id: int, initial_cost: int, edges: Optional[Dict[Node, int]] = None, is_source: bool = False, is_target: bool = False) -> None:
+        self.id = id
         self.node_cost = initial_cost
-        self.edges = edges
+        self.edges = edges if edges is not None else {}
         self.is_source = is_source
         self.is_target = is_target
 
