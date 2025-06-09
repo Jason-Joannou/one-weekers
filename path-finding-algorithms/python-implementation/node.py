@@ -1,5 +1,7 @@
 from __future__ import annotations # This allows us to forward reference - only in 3.10
-from typing import Dict, List
+from typing import Dict, List, Optional
+from random import randint
+import json
 
 
 class Node:
@@ -19,6 +21,38 @@ class Node:
         self.node_cost = new_cost
 
 
-def create_create_node(node_cost: int, edges: Dict[Node, int], is_source: bool = False, is_target: bool = False) -> Node:
-    return Node(node_cost, edges, is_source, is_target)
+def generate_connected_graph(num_nodes: int) -> List[Node]:
+    nodes = [Node(id=i, initial_cost=randint(1,100)) for i in range(num_nodes)]
+    
+    # Connect everything first linearly
+    for i in range(num_nodes - 1):
+        weight = randint(1, 20)
+        nodes[i].edges[nodes[i+1]] = weight
 
+    # Add connections if needed
+    for i in range(num_nodes):
+        current_node = nodes[i]
+        for _ in range(randint(0, 2)):
+            target_index = randint(0, num_nodes - 1)
+            target_node = nodes[target_index]
+            if target_index != i and target_node not in current_node.edges:
+                weight = randint(1, 20)
+                current_node.edges[target_node] = weight
+    
+    return nodes
+
+
+def represent_graph_as_text(nodes: List[Node]) -> Dict[int, dict]:
+    representation = {}
+    for node in nodes:
+        connected_ids = [neighbor.id for neighbor in node.edges.keys()]
+        representation[node.id] = {
+            "node_cost": node.node_cost,
+            "connections": connected_ids
+        }
+    return representation
+
+
+if __name__=="__main__":
+    graph_nodes = generate_connected_graph(num_nodes=6)
+    print(json.dumps(represent_graph_as_text(nodes=graph_nodes), indent=2))
